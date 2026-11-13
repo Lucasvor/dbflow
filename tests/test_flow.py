@@ -339,7 +339,7 @@ class RemoteTests(unittest.TestCase):
         bundle = self.call("dbflow_prepare_bundle", {"operation_id": "b1", "revision_ids": [rid], "environment": "HML"})
         self.assertFalse(bundle["isError"])
         path = Path(bundle["structuredContent"]["local_directory"])
-        self.assertTrue(path.is_relative_to(self.client_root))
+        self.assertTrue(path.resolve().is_relative_to(self.client_root.resolve()))
         self.assertTrue((path / "manifest.json").exists())
         control = Control(self.server_root)
         try:

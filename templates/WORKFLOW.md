@@ -49,9 +49,9 @@ Confirme separadamente PRO/PRI e HML/PRD. Uma falha em PRI não apaga o sucesso 
 
 ## Limites dos hooks
 
-Claude/Cursor: início, edições/ferramentas e encerramento disparam auditoria determinística de arquivos. O hook acusa candidatos; o agente é responsável por entender a mudança e registrar os metadados. O follow-up de encerramento é limitado para não prender uma sessão aguardando DBA/credenciais.
+Codex, Claude Code e Cursor recebem hooks nativos para início, ferramentas/edições e encerramento. Eles disparam auditoria determinística de arquivos. O hook acusa candidatos; o agente é responsável por entender a mudança e registrar os metadados. O follow-up de encerramento é limitado para não prender uma sessão aguardando DBA/credenciais.
 
-Codex: AGENTS.md orienta a consulta/auditoria e há MCP/CLI; não se instala um hook nativo não verificado. Os arquivos precisam estar num projeto confiável e o cliente pode exigir sua aprovação nativa para MCP/hooks. O instalador não desativa essas proteções.
+Codex: AGENTS.md orienta a consulta/auditoria; MCP e hooks SessionStart, PostToolUse e Stop ficam em .codex/config.toml. O projeto precisa ser confiável e os hooks precisam de revisão/autorização nativa (via /hooks no CLI). Claude Code e Cursor também podem exigir aprovação nativa. O instalador não desativa essas proteções. O diagnóstico distingue configuração instalada e última invocação do helper; uma chamada manual ao helper não comprova que o aplicativo disparou o hook.
 
 Os hooks não observam SSMS, SQL Developer, alterações fora da sessão nem scripts não materializados. Amplie `watch.include` para convenções locais. Relate escopo e cobertura; nenhuma regra textual garante captura universal.
 
