@@ -1,0 +1,6 @@
+**
+!server/
+!server/*.cs
+!server/DbFlow.Server.csproj
+!server/packages.lock.json
+!server/tools.json

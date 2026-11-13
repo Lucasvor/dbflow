@@ -1,0 +1,81 @@
+{
+  "projects": {
+    "teste-piloto-scripts": {
+      "version": 1,
+      "project_key": "teste-piloto-scripts",
+      "mode": "local",
+      "gitlab": {
+        "url": "https://gitlab.empresa.example",
+        "project_id": "grupo/scripts-banco",
+        "branch": "main",
+        "token_env": "DBFLOW_GITLAB_TOKEN",
+        "repository_url": "https://gitlab.empresa.example/grupo/scripts-banco"
+      },
+      "remote_url": "",
+      "remote_token_env": "DBFLOW_SERVICE_TOKEN",
+      "databases": {
+        "PRO": {
+          "engine": "sqlserver",
+          "environments": {
+            "TI": {
+              "instance_alias": "simulated-ti",
+              "database": "PRO"
+            },
+            "HML": {
+              "instance_alias": "simulated-hml",
+              "database": "PRO"
+            },
+            "PRD": {
+              "instance_alias": "simulated-prd",
+              "database": "PRO"
+            }
+          }
+        },
+        "PRI": {
+          "engine": "sqlserver",
+          "environments": {
+            "TI": {
+              "instance_alias": "simulated-ti",
+              "database": "PRI"
+            },
+            "HML": {
+              "instance_alias": "simulated-hml",
+              "database": "PRI"
+            },
+            "PRD": {
+              "instance_alias": "simulated-prd",
+              "database": "PRI"
+            }
+          }
+        }
+      },
+      "watch": {
+        "include": [
+          "*.sql",
+          "**/*.sql",
+          "*.ddl",
+          "**/*.ddl",
+          "*.pks",
+          "**/*.pks",
+          "*.pkb",
+          "**/*.pkb",
+          "*.sqlproj",
+          "**/*.sqlproj",
+          "migrations/**",
+          "**/migrations/**",
+          "database/**",
+          "**/database/**",
+          "mongo/**",
+          "**/mongo/**"
+        ]
+      },
+      "allowed_origins": []
+    }
+  },
+  "allowed_hosts": [
+    "dbflow.apps.empresa.example",
+    "localhost",
+    "127.0.0.1"
+  ],
+  "allowed_origins": []
+}

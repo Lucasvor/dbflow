@@ -1,0 +1,34 @@
+**/bin/
+**/obj/
+server/publish/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Per-user configuration and credentials. Keep checked-in templates/examples.
+.env
+.env.*
+!.env.example
+!.env.*.example
+**/.db-control/local/
+**/.db-control/backups/
+**/credentials*.json
+**/secrets*.json
+**/.db-control/install-manifest.json
+
+# IDE workspace and per-user project settings.
+.vs/
+*.suo
+*.user
+
+# Local backups and editor/OS noise.
+*.bak
+*.backup
+*.orig
+*~
+.DS_Store
+Thumbs.db
+
+**/data/

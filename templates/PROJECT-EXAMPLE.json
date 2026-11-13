@@ -1,0 +1,29 @@
+{
+  "note": "Exemplo de mapeamento. Não é uma conexão; substitua aliases pelos destinos reais antes de registrar entregas.",
+  "databases": {
+    "PRO": {
+      "engine": "sqlserver",
+      "environments": {
+        "TI": {"instance_alias": "sql-ti", "database": "PRO"},
+        "HML": {"instance_alias": "sql-hml", "database": "PRO"},
+        "PRD": {"instance_alias": "sql-prd", "database": "PRO"}
+      }
+    },
+    "PRI": {
+      "engine": "sqlserver",
+      "environments": {
+        "TI": {"instance_alias": "sql-ti", "database": "PRI"},
+        "HML": {"instance_alias": "sql-hml", "database": "PRI"},
+        "PRD": {"instance_alias": "sql-prd", "database": "PRI"}
+      }
+    },
+    "FATURAMENTO": {
+      "engine": "oracle",
+      "environments": {"HML": {"instance_alias": "oracle-hml", "database": "FATURAMENTO"}}
+    },
+    "CATALOGO": {
+      "engine": "mongodb",
+      "environments": {"HML": {"instance_alias": "mongo-hml", "database": "catalogo"}}
+    }
+  }
+}

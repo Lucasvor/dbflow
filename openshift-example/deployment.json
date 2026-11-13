@@ -1,0 +1,237 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "dbflow-config",
+        "namespace": "dbflow",
+        "labels": {
+          "app.kubernetes.io/name": "dbflow"
+        }
+      },
+      "data": {
+        "server-config.json": "{\n  \"projects\": {\n    \"teste-piloto-scripts\": {\n      \"version\": 1,\n      \"project_key\": \"teste-piloto-scripts\",\n      \"mode\": \"local\",\n      \"gitlab\": {\n        \"url\": \"https://gitlab.empresa.example\",\n        \"project_id\": \"grupo/scripts-banco\",\n        \"branch\": \"main\",\n        \"token_env\": \"DBFLOW_GITLAB_TOKEN\",\n        \"repository_url\": \"https://gitlab.empresa.example/grupo/scripts-banco\"\n      },\n      \"remote_url\": \"\",\n      \"remote_token_env\": \"DBFLOW_SERVICE_TOKEN\",\n      \"databases\": {\n        \"PRO\": {\n          \"engine\": \"sqlserver\",\n          \"environments\": {\n            \"TI\": {\n              \"instance_alias\": \"simulated-ti\",\n              \"database\": \"PRO\"\n            },\n            \"HML\": {\n              \"instance_alias\": \"simulated-hml\",\n              \"database\": \"PRO\"\n            },\n            \"PRD\": {\n              \"instance_alias\": \"simulated-prd\",\n              \"database\": \"PRO\"\n            }\n          }\n        },\n        \"PRI\": {\n          \"engine\": \"sqlserver\",\n          \"environments\": {\n            \"TI\": {\n              \"instance_alias\": \"simulated-ti\",\n              \"database\": \"PRI\"\n            },\n            \"HML\": {\n              \"instance_alias\": \"simulated-hml\",\n              \"database\": \"PRI\"\n            },\n            \"PRD\": {\n              \"instance_alias\": \"simulated-prd\",\n              \"database\": \"PRI\"\n            }\n          }\n        }\n      },\n      \"watch\": {\n        \"include\": [\n          \"*.sql\",\n          \"**/*.sql\",\n          \"*.ddl\",\n          \"**/*.ddl\",\n          \"*.pks\",\n          \"**/*.pks\",\n          \"*.pkb\",\n          \"**/*.pkb\",\n          \"*.sqlproj\",\n          \"**/*.sqlproj\",\n          \"migrations/**\",\n          \"**/migrations/**\",\n          \"database/**\",\n          \"**/database/**\",\n          \"mongo/**\",\n          \"**/mongo/**\"\n        ]\n      },\n      \"allowed_origins\": []\n    }\n  },\n  \"allowed_hosts\": [\n    \"dbflow.apps.empresa.example\",\n    \"localhost\",\n    \"127.0.0.1\"\n  ],\n  \"allowed_origins\": []\n}"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "dbflow-data",
+        "namespace": "dbflow",
+        "labels": {
+          "app.kubernetes.io/name": "dbflow"
+        }
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "2Gi"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "dbflow",
+        "namespace": "dbflow",
+        "labels": {
+          "app.kubernetes.io/name": "dbflow"
+        }
+      },
+      "spec": {
+        "replicas": 1,
+        "strategy": {
+          "type": "Recreate"
+        },
+        "selector": {
+          "matchLabels": {
+            "app.kubernetes.io/name": "dbflow"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "dbflow"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "terminationGracePeriodSeconds": 60,
+            "containers": [
+              {
+                "name": "mcp",
+                "image": "registry.empresa.example/equipe/dbflow:0.2.0",
+                "ports": [
+                  {
+                    "name": "http",
+                    "containerPort": 8080
+                  }
+                ],
+                "env": [
+                  {
+                    "name": "DBFLOW_CONFIG",
+                    "value": "/config/server-config.json"
+                  },
+                  {
+                    "name": "DBFLOW_DATA",
+                    "value": "/data"
+                  },
+                  {
+                    "name": "ASPNETCORE_HTTP_PORTS",
+                    "value": "8080"
+                  }
+                ],
+                "envFrom": [
+                  {
+                    "secretRef": {
+                      "name": "dbflow-secrets"
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "data",
+                    "mountPath": "/data"
+                  },
+                  {
+                    "name": "config",
+                    "mountPath": "/config",
+                    "readOnly": true
+                  },
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  },
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "512Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "seccompProfile": {
+                    "type": "RuntimeDefault"
+                  }
+                },
+                "livenessProbe": {
+                  "httpGet": {
+                    "path": "/health/live",
+                    "port": "http"
+                  },
+                  "initialDelaySeconds": 10,
+                  "periodSeconds": 15
+                },
+                "readinessProbe": {
+                  "httpGet": {
+                    "path": "/health/ready",
+                    "port": "http"
+                  },
+                  "initialDelaySeconds": 5,
+                  "periodSeconds": 10
+                },
+                "startupProbe": {
+                  "httpGet": {
+                    "path": "/health/live",
+                    "port": "http"
+                  },
+                  "failureThreshold": 30,
+                  "periodSeconds": 2
+                }
+              }
+            ],
+            "volumes": [
+              {
+                "name": "data",
+                "persistentVolumeClaim": {
+                  "claimName": "dbflow-data"
+                }
+              },
+              {
+                "name": "config",
+                "configMap": {
+                  "name": "dbflow-config"
+                }
+              },
+              {
+                "name": "tmp",
+                "emptyDir": {
+                  "sizeLimit": "128Mi"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "dbflow",
+        "namespace": "dbflow",
+        "labels": {
+          "app.kubernetes.io/name": "dbflow"
+        }
+      },
+      "spec": {
+        "selector": {
+          "app.kubernetes.io/name": "dbflow"
+        },
+        "ports": [
+          {
+            "name": "http",
+            "port": 8080,
+            "targetPort": "http"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "route.openshift.io/v1",
+      "kind": "Route",
+      "metadata": {
+        "name": "dbflow",
+        "namespace": "dbflow",
+        "labels": {
+          "app.kubernetes.io/name": "dbflow"
+        }
+      },
+      "spec": {
+        "host": "dbflow.apps.empresa.example",
+        "to": {
+          "kind": "Service",
+          "name": "dbflow"
+        },
+        "port": {
+          "targetPort": "http"
+        },
+        "tls": {
+          "termination": "edge",
+          "insecureEdgeTerminationPolicy": "Redirect"
+        }
+      }
+    }
+  ]
+}

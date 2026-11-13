@@ -1,0 +1,395 @@
+[
+  {
+    "name": "dbflow_abandon_local_revision",
+    "description": "Resolve a pending unpublished revision conflict by preserving it as abandoned. Never deletes history or abandons published revisions.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation_id",
+        "revision_id",
+        "reason"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_cancel_remote_request",
+    "description": "Cancel retry of a rejected/pending local remote request with a reason; preserves its audit record. Does not undo server operations.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation_id",
+        "reason"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_status",
+    "description": "Read registry revisions and environment confirmations; synchronize GitLab when configured. No database connection.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "demand_id": {
+          "type": "string"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "limit": {
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_get_revision",
+    "description": "Retrieve complete immutable revision scripts and dependencies to resume a demand.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "revision_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_get_bundle",
+    "description": "Retrieve an existing bundle, dispatch history and files without creating a delivery. Cancelled bundles remain audit-only.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "bundle_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "bundle_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_scan",
+    "description": "Scan configured local file patterns for unregistered candidates; not a business-database scan.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_register_revision",
+    "description": "Persist an immutable database-change revision and attempt GitLab synchronization. Queued is NOT remotely synced or applied.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "demand_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "parent_revision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "database": {
+                "type": "string"
+              },
+              "object": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "filename": {
+                "type": "string"
+              },
+              "script": {
+                "type": "string"
+              },
+              "verification": {
+                "type": "string"
+              },
+              "before_definition": {
+                "type": "string"
+              },
+              "after_definition": {
+                "type": "string"
+              },
+              "source_path": {
+                "type": "string"
+              },
+              "source_sha256": {
+                "type": "string"
+              },
+              "depends_on": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "database",
+              "object",
+              "kind",
+              "filename",
+              "script",
+              "verification"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "operation_id",
+        "demand_id",
+        "title",
+        "changes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_prepare_bundle",
+    "description": "Freeze explicit revisions into a delivery bundle and export DBA scripts/email draft. Does not send email or execute SQL.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "revision_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation_id",
+        "revision_ids",
+        "environment"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_report_dispatch",
+    "description": "Record user-reported email dispatch of an exact bundle; does not mark database application.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "bundle_id": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "sent_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation_id",
+        "bundle_id",
+        "reference",
+        "sent_at"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_confirm",
+    "description": "Record manual application, execution evidence or observed state for exact revision/database/environment/change IDs. Observation is not execution proof.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string"
+        },
+        "database": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "observed_at": {
+          "type": "string"
+        },
+        "target_fingerprint": {
+          "type": "string"
+        },
+        "bundle_id": {
+          "type": "string"
+        },
+        "change_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "operation_id",
+        "revision_id",
+        "database",
+        "environment",
+        "kind",
+        "evidence",
+        "observed_at",
+        "change_ids",
+        "target_fingerprint"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_record_snapshot",
+    "description": "Store definitions collected with USER tools or exports. Text comparison only; partial inventory never proves deletion; no application status update.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string"
+        },
+        "database": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "captured_at": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string"
+        },
+        "target_fingerprint": {
+          "type": "string"
+        },
+        "objects": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "covered_objects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "operation_id",
+        "database",
+        "environment",
+        "captured_at",
+        "source",
+        "objects",
+        "covered_objects",
+        "limitations",
+        "target_fingerprint"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "dbflow_exclude_candidate",
+    "description": "Exclude one exact local file hash with an explicit reason. Edited files become candidates again.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "reason"
+      ],
+      "additionalProperties": false
+    }
+  }
+]

@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} / .NET 8 / Python 3.13
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Set up .NET SDK 8
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Pin CLI selection to the installed .NET 8 SDK
+        shell: pwsh
+        run: |
+          $sdkVersions = dotnet --list-sdks | ForEach-Object {
+            if ($_ -match '^([0-9]+\.[0-9]+\.[0-9]+) \[') { $Matches[1] }
+          }
+          $sdk8 = $sdkVersions | Where-Object { $_ -like '8.0.*' } | Sort-Object { [version]$_ } -Descending | Select-Object -First 1
+          if (-not $sdk8) { throw 'The .NET 8 SDK was not installed.' }
+          @{ sdk = @{ version = $sdk8; rollForward = 'disable' } } |
+            ConvertTo-Json -Depth 3 |
+            Set-Content -LiteralPath global.json -Encoding utf8
+          dotnet --version
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: '3.13'
+
+      - name: Publish production server
+        shell: pwsh
+        run: ./Build.ps1
+
+      - name: Run Python installer and integration tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Run .NET server protocol scenarios
+        run: dotnet run --project server-tests/DbFlow.Server.Tests.csproj --configuration Release
