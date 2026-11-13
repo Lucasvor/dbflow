@@ -150,7 +150,7 @@ Exemplo de configuração remota e mapa:
 ```powershell
 .\Install.ps1 -Project 'D:\projetos\MinhaAplicacao' -Mode Remote `
   -RepositoryUrl 'https://gitlab.empresa.example/grupo/scripts-banco' `
-  -McpUrl 'https://dbflow.apps.empresa.example/mcp/minha-aplicacao' `
+  -McpUrl 'https://dbflow.apps.empresa.example/mcp/minhaaplicacao' `
   -PromptToken -Apply
 
 python .db-control\runtime\dbctl.py --project . map-database `
@@ -165,7 +165,7 @@ As instruções persistentes são lidas pelo agente automaticamente no contexto 
 
 - **Claude Code:** instalador grava MCP em `.mcp.json`, instruções em `CLAUDE.md`, auditor MCP e eventos de hook em `.claude/settings.json`. Hooks chamam `python .db-control/runtime/dbctl.py --project . hook` nos eventos do cliente.
 - **Cursor:** MCP em `.cursor/mcp.json`, regra com `alwaysApply`, auditor e `.cursor/hooks.json`; cobertura depende dos eventos e versão do Cursor instalados.
-- **Codex:** regra/instruções no `AGENTS.md`/override e MCP stdio em `.codex/config.toml`; o instalador também acrescenta hooks nativos no bloco gerenciado desse arquivo: `SessionStart`, `PostToolUse` (matcher `.*`) e `Stop`. `SessionStart`/`PostToolUse` executam auditoria; `Stop` pode devolver `decision=block` com `reason` para pedir continuação quando há pendência; `stop_hook_active` limita o loop. A implementação foi verificada com `codex-cli 0.153.4` e `hooks stable`; veja a [documentação oficial de hooks do Codex](https://learn.chatgpt.com/docs/hooks). é necessário confiar o projeto e revisar/autorizar o hash do hook via `/hooks`. A presença no arquivo, por si só, não ativa o hook.
+- **Codex:** regra/instruções no `AGENTS.md`/override e MCP stdio em `.codex/config.toml`; o instalador também acrescenta hooks nativos no bloco gerenciado desse arquivo: `SessionStart`, `PostToolUse` (matcher `.*`) e `Stop`. `SessionStart`/`PostToolUse` executam auditoria; `Stop` pode devolver `decision=block` com `reason` para pedir continuação quando há pendência; `stop_hook_active` limita o loop. A implementação foi verificada com `codex-cli 0.153.4` e `hooks stable`; veja a [documentação oficial de hooks do Codex](https://learn.chatgpt.com/docs/hooks). É necessário confiar o projeto e revisar/autorizar o hash do hook via `/hooks`. A presença no arquivo, por si só, não ativa o hook.
 
 O MCP anuncia estas 12 ferramentas (`server/tools.json`):
 

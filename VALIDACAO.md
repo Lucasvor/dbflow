@@ -4,7 +4,7 @@ Atualizado em 13/11/2026. Servidor C# com target `net8.0`, SDK MCP oficial 1.2.0
 
 ## Evidência automatizada
 
-Resultado final: **39 testes Python/integrados aprovados**, incluindo 10 testes do executável .NET e 3 testes de hooks Codex; **8 cenários C# do adaptador GitLab aprovados** na migração do servidor. As execuções concluíram com código de saída 0.
+Resultado final: **39 testes Python/integrados aprovados**, incluindo 10 testes do executável .NET e 3 testes de hooks Codex; **8 cenários C# do adaptador GitLab aprovados**. A [execução no GitHub Actions](https://github.com/Lucasvor/dbflow/actions/runs/43362703966) concluiu com sucesso nos runners Windows e Ubuntu, compilando com SDK .NET 8 e usando Python 3.13. O teste DPAPI se aplica somente ao Windows. Na primeira execução de CI, uma comparação de caminhos temporários no Windows falhou; a verificação passou a comparar os dois caminhos resolvidos, preservando a exigência de que o pacote esteja dentro do projeto.
 
 - Publicação Release do servidor, sem avisos/erros na compilação final.
 - Integração real do executável .NET via stdio: initialize, tools/list e reconhecimento da versão 0.2.0.

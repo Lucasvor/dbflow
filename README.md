@@ -6,6 +6,8 @@ O MCP não conecta bancos de negócio, não executa SQL e não envia email. Dese
 
 ## Guia detalhado
 
+Primeiro contato com o DBFlow? Comece pelo [manual passo a passo para iniciantes](docs/COMECE-AQUI.md): instalação, configuração, primeira demanda, entrega ao DBA, confirmação e recuperação de problemas, com comandos e resultados esperados.
+
 Para entender a estrutura dos três repositórios, instalação e credenciais, hooks por cliente, ferramentas MCP, diagnóstico e o fluxo completo de uma demanda até o DBA, consulte [GUIA-DETALHADO.md](docs/GUIA-DETALHADO.md). Este pacote é o repositório do produto DBFlow; o ledger continua no repositório central de scripts da empresa.
 
 ## Arquitetura
